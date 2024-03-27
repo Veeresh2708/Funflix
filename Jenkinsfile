@@ -15,7 +15,7 @@ pipeline{
         }
         stage('Checkout from Git'){
             steps{
-                git branch: 'main', url: 'https://github.com/Aj7Ay/Netflix-clone.git'
+                git branch: 'main', url: 'https://github.com/Veeresh2708/Funflix.git'
             }
         }
         stage("Sonarqube Analysis "){
@@ -29,7 +29,7 @@ pipeline{
         stage("quality gate"){
            steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token' 
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar' 
                 }
             } 
         }
@@ -52,11 +52,13 @@ pipeline{
         stage("Docker Build & Push"){
             steps{
                 script{
-                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
-                       sh "docker build --build-arg TMDB_V3_API_KEY=<yourtmdbapikey> -t netflix ."
-                       sh "docker tag netflix nasi101/netflix:latest "
-                       sh "docker push nasi101/netflix:latest "
-                    }
+                   withDockerRegistry(credentialsId: 'docker-hub', toolName: 'docker'){
+                   //withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+                   sh 'printenv'
+                   sh 'docker build -t netflix:""$GIT_COMMIT"" .'
+                   sh 'docker tag netflix:""$GIT_COMMIT"" veereshvanga/ott:$BUILD_NUMBER'
+                   sh 'docker push veereshvanga/ott:""$BUILD_NUMBER""'
+                   }
                 }
             }
         }
@@ -70,29 +72,29 @@ pipeline{
                 sh 'docker run -d -p 8081:80 nasi101/netflix:latest'
             }
         }
-        stage('Deploy to kubernets'){
-            steps{
-                script{
-                    dir('Kubernetes') {
-                        withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
-                                sh 'kubectl apply -f deployment.yml'
-                                sh 'kubectl apply -f service.yml'
-                        }   
-                    }
-                }
-            }
-        }
+        #stage('Deploy to kubernets'){
+        #    steps{
+        #        script{
+        #            dir('Kubernetes') {
+        #                withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+        #                        sh 'kubectl apply -f deployment.yml'
+        #                        sh 'kubectl apply -f service.yml'
+        #                }   
+        #            }
+        #        }
+        #    }
+        #}
 
     }
-    post {
-     always {
-        emailext attachLog: true,
-            subject: "'${currentBuild.result}'",
-            body: "Project: ${env.JOB_NAME}<br/>" +
-                "Build Number: ${env.BUILD_NUMBER}<br/>" +
-                "URL: ${env.BUILD_URL}<br/>",
-            to: 'iambatmanthegoat@gmail.com',                                #change mail here
-            attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
-        }
-    }
+    #post {
+    #always {
+    #    emailext attachLog: true,
+    #        subject: "'${currentBuild.result}'",
+    #        body: "Project: ${env.JOB_NAME}<br/>" +
+    #            "Build Number: ${env.BUILD_NUMBER}<br/>" +
+    #            "URL: ${env.BUILD_URL}<br/>",
+    #        to: 'iambatmanthegoat@gmail.com',                                #change mail here
+    #        attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+    #    }
+    #}
 }

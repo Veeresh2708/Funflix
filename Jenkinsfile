@@ -69,7 +69,7 @@ pipeline{
         }
         stage('Deploy to container'){
             steps{
-                sh 'docker run -d -p 8081:80 nasi101/netflix:latest'
+                sh 'docker run -d -p 8081:80 veereshvanga/ott:""$BUILD_NUMBER""''
             }
         }
         //stage('Deploy to kubernets'){

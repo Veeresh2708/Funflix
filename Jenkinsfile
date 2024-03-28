@@ -67,11 +67,11 @@ pipeline{
                 sh "trivy image veereshvanga/ott:""$BUILD_NUMBER"" > trivyimage.txt" 
             }
         }
-        stage('Deploy to container'){
-            steps{
-                sh 'docker run -d -p 8081:80 veereshvanga/ott:""$BUILD_NUMBER""'
-            }
-        }
+        //stage('Deploy to container'){
+        //    steps{
+        //        sh 'docker run -d -p 8081:80 veereshvanga/ott:""$BUILD_NUMBER""'
+        //    }
+        //}
         //stage('Deploy to kubernets'){
         //    steps{
         //        script{

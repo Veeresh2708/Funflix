@@ -49,19 +49,19 @@ pipeline{
                 sh "trivy fs . > trivyfs.txt"
             }
         }
-        stage("Docker Build & Push"){
-            steps{
-                script{
-                   withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker'){
-                   //withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-                   sh 'printenv'
-                   sh 'docker build --build-arg TMDB_V3_API_KEY=351823a305617537180a58b4308a0427 -t netflix:""$GIT_COMMIT"" .'
-                   sh 'docker tag netflix:""$GIT_COMMIT"" veereshvanga/ott:$BUILD_NUMBER'
-                   sh 'docker push veereshvanga/ott:""$BUILD_NUMBER""'
-                   }
-                }
-            }
-        }
+        //stage("Docker Build & Push"){
+        //    steps{
+        //        script{
+        //           withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker'){
+        //           //withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+        //           sh 'printenv'
+        //           sh 'docker build --build-arg TMDB_V3_API_KEY=351823a305617537180a58b4308a0427 -t netflix:""$GIT_COMMIT"" .'
+        //           sh 'docker tag netflix:""$GIT_COMMIT"" veereshvanga/ott:$BUILD_NUMBER'
+        //           sh 'docker push veereshvanga/ott:""$BUILD_NUMBER""'
+        //           }
+        //        }
+        //    }
+        //}
         stage("TRIVY"){
             steps{
                 sh "trivy image nasi101/netflix:latest > trivyimage.txt" 

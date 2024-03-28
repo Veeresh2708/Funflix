@@ -64,7 +64,7 @@ pipeline{
         }
         stage("TRIVY"){
             steps{
-                sh "trivy image veereshvanga/ott:""$BUILD_NUMBER"" > trivyimage.txt" 
+                sh 'trivy image veereshvanga/ott:""$BUILD_NUMBER"" > trivyimage.txt' 
             }
         }
         //stage('Deploy to container'){
